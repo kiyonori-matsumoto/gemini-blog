@@ -2,14 +2,14 @@
 
 ## 1. 概要
 
-Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投稿機能を備えた静적ブログを構築します。デザインはシンプルかつ洗練されたものを目指します。
+Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投稿機能を備えた静的ブログを構築します。デザインはシンプルかつ洗練されたものを目指します。
 
 ## 2. 技術スタック
 
 *   **フレームワーク:** Next.js (Static Site Generation - SSG)
 *   **言語:** TypeScript
 *   **スタイリング:** Tailwind CSS (ミニマリストでクリーンなデザイン)
-*   **CI/CD & 自動化:** GitHub Actions
+*   **CI/CD & 自動化:** GitHub Actions, Vercel
 *   **コンテンツ生成:** 生成AI (例: Gemini API)
 
 ## 3. 主な機能
@@ -23,7 +23,7 @@ Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投
     *   Node.jsスクリプトがIssueの内容を元に生成AI (Gemini API) を呼び出し、ブログ記事(Markdown)を生成。
     *   生成された記事を`posts`ディレクトリに保存し、`main`ブランチに自動でプッシュ。
 *   **自動デプロイ:**
-    *   `main`ブランチへのプッシュ時にサイトをビルドし、ホスティングプラットフォームにデプロイ。
+    *   `main`ブランチへのプッシュをトリガーに、VercelのCI/CD機能が自動でサイトをビルド・デプロイ。
 
 ## 4. ディレクトリ構成
 
@@ -31,7 +31,6 @@ Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投
 /
 ├── .github/
 │   └── workflows/
-│       ├── deploy.yml      # Vercelへのデプロイ用
 │       └── issue-to-post.yml # issueからブログを生成する用
 ├── posts/                  # ブログ記事 (Markdown)
 ├── scripts/                # 自動化用スクリプト
@@ -43,7 +42,7 @@ Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投
 ## 5. ホスティング
 
 **推奨:** **Vercel**
-*   Next.jsとの親和性が非常に高く、設定不要でデプロイが可能。
+*   Next.jsとの親和性が非常に高く、GitHubリポジトリを連携させるだけでCI/CDが自動で設定される。
 *   `main`ブランチへのプッシュで自動的にデプロイされ、Pull Requestごとにプレビュー環境も提供される。
 
 **代替案:**
