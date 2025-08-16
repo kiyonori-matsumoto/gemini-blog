@@ -2,11 +2,14 @@ name: Issue to Post
 
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
 
 jobs:
   generate-post:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
     steps:
       - uses: actions/checkout@v3
 
@@ -32,3 +35,9 @@ jobs:
           git add posts/
           git commit -m "feat: Add new post from issue #${{ github.event.issue.number }}"
           git push
+
+      - name: Close issue
+        uses: peter-evans/close-issue@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          comment: "Blog post generated and committed successfully! Closing this issue."
