@@ -33,12 +33,18 @@ async function generatePost() {
 
     **ルール:**
 
-    *   ブログのタイトルはH1見出し(---で囲む)にしてください。
-    *   ファイル名は、記事の内容を簡潔に表す英語のケバブケースにしてください。(例: my-first-post.md)
-    *   記事の本文はMarkdown形式で記述してください。
-    *   記事の最初には、frontmatterとしてtitleを記述してください。
-    *   生成するコンテンツは、ファイル名と記事の本文のみにしてください。
+    *   最初の行は、記事の内容を簡潔に表す英語のケバブケースのファイル名にしてください。(例: my-first-post.md)
     *   ファイル名の後に、改行を一つ入れてください。
+    *   その後の内容は、Markdown形式のブログ記事本文にしてください。
+    *   ブログ記事本文の先頭には、以下の形式のYAMLフロントマターを含めてください。
+        ```yaml
+        ---
+        title: [記事のタイトル]
+        date: YYYY-MM-DD
+        ---
+        ```
+        `date`は必ず今日のYYYY-MM-DD形式の日付にしてください。
+    *   YAMLフロントマターの直後には、記事の本文を記述してください。H1見出しは不要です。
 
     **記事のテーマ:**
     ${issueTitle}
@@ -55,14 +61,12 @@ async function generatePost() {
   const fileName = firstLine.trim();
   const content = text.substring(text.indexOf('\n') + 1);
 
-  const finalContent = `---\ndate: '${currentDate}'
----\n
-${content}`;
+  const finalContent = content.replace(/date: \d{4}-\d{2}-\d{2}/, `date: ${currentDate}`);
 
   const fullPath = path.join(postsDirectory, fileName);
   fs.writeFileSync(fullPath, finalContent);
 
-  console.log(`Generated post: ${fileName}`);
+  console.log("Generated post: " + fileName);
 }
 
 generatePost();
