@@ -2,12 +2,11 @@ import { getPostData } from '@/lib/posts';
 
 interface PostPageProps {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<any>;
 }
 
 export default async function Post({ params }: PostPageProps) {
   const resolvedParams = await params;
-  const postData = await getPostData(params.id);
+  const postData = await getPostData(resolvedParams.id);
   return (
     <article>
       <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">{postData.title}</h1>
