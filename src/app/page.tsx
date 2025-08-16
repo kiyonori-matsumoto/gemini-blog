@@ -14,7 +14,7 @@ export default function Home() {
             </Link>
             <br />
             <small className="text-gray-500">
-              {date}
+              {new Date(date).toLocaleString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
             </small>
           </li>
         ))}
