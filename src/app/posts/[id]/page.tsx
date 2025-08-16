@@ -1,10 +1,12 @@
 import { getPostData } from '@/lib/posts';
 
-type Props = {
-  params: { id: string };
-};
+interface PostPageProps {
+  params: Promise<{ id: string }>;
+  searchParams?: Promise<any>;
+}
 
-export default async function Post({ params }: Props) {
+export default async function Post({ params }: PostPageProps) {
+  const resolvedParams = await params;
   const postData = await getPostData(params.id);
   return (
     <article>
