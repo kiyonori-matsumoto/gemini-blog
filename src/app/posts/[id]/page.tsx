@@ -10,7 +10,7 @@ export default async function Post({ params }: PostPageProps) {
   return (
     <article className="prose dark:prose-invert max-w-none">
       <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl">{postData.title}</h1>
-      <div className="text-gray-500 mb-4 dark:text-gray-300">
+      <div className="text-gray-500 mb-4 dark:text-gray-300 text-right">
         {new Date(postData.date).toLocaleString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
       </div>
       <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
