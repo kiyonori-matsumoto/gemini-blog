@@ -3,3 +3,16 @@
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom styles for prose typography */
+.prose h2 {
+  @apply text-2xl font-bold mt-8 mb-4;
+}
+
+.prose li {
+  @apply ml-4 list-disc;
+}
+
+.prose ul {
+  @apply mb-4;
+}
