@@ -16,12 +16,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <header className="bg-gray-800 text-white p-4">
+      <body className={`${inter.className} bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100`}>
+        <header className="bg-gray-800 text-white p-4 dark:bg-gray-950">
           <h1 className="text-2xl font-bold">My Gemini Blog</h1>
         </header>
-        <main className="container mx-auto p-4">{children}</main>
-        <footer className="bg-gray-800 text-white p-4 text-center">
+        <main className="container mx-auto p-4 min-h-screen">{children}</main>
+        <footer className="bg-gray-800 text-white p-4 text-center dark:bg-gray-950">
           <p>&copy; 2025 My Gemini Blog</p>
         </footer>
       </body>

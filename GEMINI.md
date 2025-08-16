@@ -8,14 +8,14 @@ Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投
 
 *   **フレームワーク:** Next.js (Static Site Generation - SSG)
 *   **言語:** TypeScript
-*   **スタイリング:** Tailwind CSS (ミニマリストでクリーンなデザイン)
+*   **スタイリング:** Tailwind CSS (ミニマリストでクリーンなデザイン、システム設定に応じたダークモード対応)
 *   **CI/CD & 自動化:** GitHub Actions, Vercel
 *   **コンテンツ生成:** 生成AI (例: Gemini API)
 
 ## 3. 主な機能
 
 *   **記事管理:**
-    *   リポジトリ内のMarkdownファイルで記事を管理。
+    *   リポジリポジトリ内のMarkdownファイルで記事を管理。
 *   **静的サイト生成:**
     *   MarkdownファイルをHTMLに変換し、静的なブログサイトを生成。
 *   **自動ブログ投稿ワークフロー:**

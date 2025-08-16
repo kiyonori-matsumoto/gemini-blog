@@ -1,36 +1,72 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 静的ブログ (v2)
 
-## Getting Started
+Next.js、GitHub Actions、生成AI (Gemini API) を活用した静的ブログです。Issueを作成するだけでブログ記事が自動生成され、Vercelに自動デプロイされます。
 
-First, run the development server:
+## ✨ 主な機能
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+*   **記事管理:** リポジトリ内のMarkdownファイルで記事を管理します。
+*   **静的サイト生成:** MarkdownファイルをHTMLに変換し、静的なブログサイトを生成します。
+*   **自動ブログ投稿ワークフロー:**
+    *   GitHub Issueが作成されるとGitHub Actionsがトリガーされます。
+    *   Issueの内容を元に生成AI (Gemini API) がブログ記事(Markdown)を生成します。
+    *   生成された記事は`posts`ディレクトリに保存され、`main`ブランチに自動でプッシュされます。
+*   **自動デプロイ:** `main`ブランチへのプッシュをトリガーに、VercelのCI/CD機能が自動でサイトをビルド・デプロイします。
+*   **ダークモード対応:** システム設定に応じたダークモードをサポートします。
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ 技術スタック
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+*   **フレームワーク:** Next.js (Static Site Generation - SSG)
+*   **言語:** TypeScript
+*   **スタイリング:** Tailwind CSS
+*   **CI/CD & 自動化:** GitHub Actions, Vercel
+*   **コンテンツ生成:** Google Gemini API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 セットアップ
 
-## Learn More
+1.  **リポジトリをクローン:**
+    ```bash
+    git clone https://github.com/your-username/your-repository.git
+    cd your-repository
+    ```
 
-To learn more about Next.js, take a look at the following resources:
+2.  **依存関係のインストール:**
+    ```bash
+    npm install
+    ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3.  **開発サーバーの起動:**
+    ```bash
+    npm run dev
+    ```
+    ブラウザで `http://localhost:3000` を開くと、開発中のサイトが表示されます。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ⚙️ 環境設定
 
-## Deploy on Vercel
+### GitHub Secrets
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+自動ブログ投稿ワークフローを機能させるには、GitHubリポジトリのSecretsに`GEMINI_API_KEY`を設定する必要があります。
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1.  [Google AI Studio](https://aistudio.google.com/) でGemini APIキーを取得します。
+2.  GitHubリポジトリの `Settings` > `Secrets and variables` > `Actions` に移動します。
+3.  `New repository secret` をクリックし、**Name:** `GEMINI_API_KEY`、**Secret:** 取得したAPIキー を設定します。
+
+### Vercel デプロイ
+
+Vercelにデプロイするには、GitHubリポジトリをVercelプロジェクトに連携させるだけです。
+
+1.  [Vercel](https://vercel.com/new) にアクセスし、本リポジトリをインポートして新しいプロジェクトを作成します。
+2.  `main`ブランチへのプッシュで自動的にデプロイされるように設定されていることを確認してください。
+
+## 📝 自動ブログ投稿の使い方
+
+1.  GitHubリポジトリの「Issues」タブに移動します。
+2.  新しいIssueを作成します。
+    *   **タイトル:** ブログ記事のタイトルになります。
+    *   **本文:** ブログ記事の概要や、Geminiに生成してほしい内容を記述します。
+3.  Issueを作成すると、GitHub Actionsが自動的にトリガーされ、Gemini APIが呼び出されて記事が生成されます。
+4.  生成された記事は`posts/`ディレクトリに新しいMarkdownファイルとして追加され、`main`ブランチにコミットされます。
+5.  `main`ブランチへのコミットをトリガーに、Vercelが自動的にサイトをビルド・デプロイし、新しい記事が公開されます。
+
+## 💡 ダークモード
+
+本ブログは、システム設定に応じたダークモードをサポートしています。お使いのOSの表示設定（ライトモード/ダークモード）を切り替えることで、ブログのデザインも自動的に切り替わります。

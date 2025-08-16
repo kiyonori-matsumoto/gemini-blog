@@ -8,8 +8,8 @@ export default function Home() {
       <h2 className="text-3xl font-bold mb-4">Blog</h2>
       <ul className="space-y-4">
         {allPostsData.map(({ id, date, title }) => (
-          <li key={id} className="border p-4 rounded-md">
-            <Link href={`/posts/${id}`} className="text-xl font-semibold text-blue-600 hover:underline">
+          <li key={id} className="border p-4 rounded-md dark:border-gray-700">
+            <Link href={`/posts/${id}`} className="text-xl font-semibold text-blue-600 hover:underline dark:text-blue-400">
               {title}
             </Link>
             <br />
