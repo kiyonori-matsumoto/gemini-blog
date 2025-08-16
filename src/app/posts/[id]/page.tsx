@@ -1,6 +1,10 @@
 import { getPostData } from '@/lib/posts';
 
-export default async function Post({ params }: { params: { id: string } }) {
+type Props = {
+  params: { id: string };
+};
+
+export default async function Post({ params }: Props) {
   const postData = await getPostData(params.id);
   return (
     <article>
