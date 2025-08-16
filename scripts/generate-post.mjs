@@ -53,7 +53,7 @@ async function generatePost() {
 
   const result = await model.generateContent(prompt);
   const response = await result.response;
-  const text = response.text().trim();
+  const text = response.text().replace(/^\s*\n/, '').trim();
 
   const firstLine = text.split('\n')[0];
   const fileName = firstLine.trim();
