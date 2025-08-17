@@ -1,13 +1,9 @@
 import { getSortedPostsData } from '@/lib/posts';
-import Link from 'next/link';
 import PostCard from '@/components/PostCard';
 
-interface TagPageProps {
-  params: { tag: string };
-}
-
-export default async function TagPage({ params }: TagPageProps) {
-  const decodedTag = decodeURIComponent(params.tag);
+export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
+  const resolvedParams = await params;
+  const decodedTag = decodeURIComponent(resolvedParams.tag);
   const allPostsData = getSortedPostsData();
 
   const filteredPosts = allPostsData.filter(post =>
