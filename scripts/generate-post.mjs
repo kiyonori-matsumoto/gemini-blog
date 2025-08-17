@@ -53,11 +53,11 @@ async function generatePost() {
 
   const result = await model.generateContent(prompt);
   const response = await result.response;
-  const text = response.text().replace(/^\s*\n/, '').trim();
+  const text = response.text();
 
   const firstLine = text.split('\n')[0];
   const fileName = firstLine.trim();
-  const content = text.substring(text.indexOf('\n') + 1);
+  const content = text.substring(text.indexOf('\n') + 1).replace(/^(?:\s*\n)*/, '').trim();
 
   const finalContent = content.replace(/date: \d{4}-\d{2}-\d{2}/, `date: ${currentDate}`);
 
