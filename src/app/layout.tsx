@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   icons: {
     icon: '/favicon.svg',
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -37,9 +41,9 @@ export default function RootLayout({
             <h1>無限ブログ</h1>
           </Link>
         </header>
-        <main className="container mx-auto p-4 min-h-screen flex">
-          <div className="w-3/4 pr-4">{children}</div>
-          <div className="w-1/4 pl-4 border-l border-gray-200 dark:border-gray-700">
+        <main className="container mx-auto p-4 min-h-screen md:flex">
+          <div className="w-full md:w-3/4 md:pr-4">{children}</div>
+          <div className="w-full md:w-1/4 md:pl-4 md:border-l md:border-gray-200 dark:md:border-gray-700 mt-8 md:mt-0 md:pt-0 pt-4 border-t md:border-t-0 border-gray-200 dark:border-gray-700">
             <h2 className="text-xl font-bold mb-4">タグ</h2>
             <ul>
               {sortedTags.map(([tag, count]) => (

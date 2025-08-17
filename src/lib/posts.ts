@@ -3,6 +3,8 @@ import path from 'path';
 import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import remarkGfm from 'remark-gfm';
+import remarkCjkFriendly from 'remark-cjk-friendly';
 
 interface PostData {
   id: string;
@@ -59,6 +61,8 @@ export async function getPostData(id: string): Promise<PostData> {
 
   // Use remark to convert markdown into HTML string
   const processedContent = await remark()
+    .use(remarkCjkFriendly) // Use remark-cjk-friendly first
+    .use(remarkGfm) // Use remark-gfm
     .use(html)
     .process(matterResult.content);
   const contentHtml = processedContent.toString();
