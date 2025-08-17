@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from 'next/link';
+import { getSortedPostsData } from '@/lib/posts';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,6 +19,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const allPostsData = getSortedPostsData(); // Fetch all posts data
+  const tagCounts: { [key: string]: number } = {};
+
+  allPostsData.forEach(post => {
+    post.tags.forEach(tag => {
+      tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    });
+  });
+
+  const sortedTags = Object.entries(tagCounts).sort(([, countA], [, countB]) => countB - countA);
   return (
     <html lang="en">
       <body className={`${inter.className} bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100`}>
@@ -26,7 +37,21 @@ export default function RootLayout({
             <h1>無限ブログ</h1>
           </Link>
         </header>
-        <main className="container mx-auto p-4 min-h-screen">{children}</main>
+        <main className="container mx-auto p-4 min-h-screen flex">
+          <div className="w-3/4 pr-4">{children}</div>
+          <div className="w-1/4 pl-4 border-l border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-bold mb-4">タグ</h2>
+            <ul>
+              {sortedTags.map(([tag, count]) => (
+                <li key={tag} className="mb-2">
+                  <Link href={`/tags/${encodeURIComponent(tag)}`} className="text-teal-600 hover:underline dark:text-teal-400">
+                    {tag} ({count})
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </main>
         <footer className="bg-gray-800 text-white p-4 text-center dark:bg-gray-950">
           <p>&copy; 2025 無限ブログ</p>
         </footer>

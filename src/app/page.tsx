@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
+import PostCard from '@/components/PostCard';
 
 export default function Home() {
   const allPostsData = getSortedPostsData();
@@ -8,21 +9,13 @@ export default function Home() {
       <section>
         <h2 className="text-3xl font-bold mb-4">Blog</h2>
         <ul className="space-y-4">
-          {allPostsData.map(({ id, date, title }) => (
-            <li key={id} className="border p-4 rounded-md dark:border-gray-700">
-              <Link href={`/posts/${id}`} className="text-xl font-semibold text-blue-600 hover:underline dark:text-blue-400">
-                {title}
-              </Link>
-              <br />
-              <small className="text-gray-500">
-                {new Date(date).toLocaleString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
-              </small>
-            </li>
+          {allPostsData.map(({ id, date, title, tags }) => (
+            <PostCard key={id} id={id} date={date} title={title} tags={tags} />
           ))}
         </ul>
       </section>
       <div className="mt-8 text-center">
-        <Link href="/about" className="text-blue-600 hover:underline dark:text-blue-400">
+        <Link href="/about" className="text-teal-600 hover:underline dark:text-teal-400">
           このブログについて
         </Link>
       </div>

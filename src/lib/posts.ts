@@ -9,6 +9,7 @@ interface PostData {
   contentHtml: string;
   title: string;
   date: string;
+  tags: string[];
 }
 
 const postsDirectory = path.join(process.cwd(), 'posts');
@@ -28,9 +29,15 @@ export function getSortedPostsData() {
     const matterResult = matter(fileContents);
 
     // Combine the data with the id
+    const tags = Array.isArray(matterResult.data.tags)
+      ? (matterResult.data.tags as string[]).map(tag => String(tag).trim()).filter(tag => tag.length > 0)
+      : [];
+    const date = matterResult.data.date instanceof Date ? matterResult.data.date.toISOString().split('T')[0] : String(matterResult.data.date);
     return {
       id,
-      ...(matterResult.data as { date: string; title: string }),
+      title: matterResult.data.title as string,
+      date,
+      tags,
     };
   });
   // Sort posts by date
@@ -57,10 +64,14 @@ export async function getPostData(id: string): Promise<PostData> {
   const contentHtml = processedContent.toString();
 
   // Combine the data with the id and contentHtml
+  const tags = Array.isArray(matterResult.data.tags)
+    ? (matterResult.data.tags as string[]).map(tag => String(tag).trim()).filter(tag => tag.length > 0)
+    : [];
   return {
     id,
     contentHtml,
     title: matterResult.data.title as string,
     date: matterResult.data.date instanceof Date ? matterResult.data.date.toISOString().split('T')[0] : String(matterResult.data.date),
+    tags,
   };
 }
