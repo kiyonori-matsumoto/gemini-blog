@@ -8,7 +8,7 @@ export default async function Post({ params }: PostPageProps) {
   const resolvedParams = await params;
   const postData = await getPostData(resolvedParams.id);
   return (
-    <article className="prose dark:prose-invert mx-auto">
+    <article className="prose dark:prose-invert prose-teal mx-auto">
       <h1 className="text-3xl font-extrabold tracking-tight lg:text-4xl">{postData.title}</h1>
       <div className="text-gray-500 mb-4 dark:text-gray-300 text-right">
         {new Date(postData.date).toLocaleString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}
@@ -16,7 +16,7 @@ export default async function Post({ params }: PostPageProps) {
       <div dangerouslySetInnerHTML={{ __html: postData.contentHtml }} />
       <div className="mt-8 flex justify-end space-x-4">
         <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(postData.title)}&url=${encodeURIComponent(`https://example.com/posts/${postData.id}`)}`}
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(postData.title)}&url=${encodeURIComponent(`https://ai-blog.matsukiyo.me/posts/${postData.id}`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="group inline-flex items-center justify-center w-10 h-10 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 overflow-hidden transition-all duration-300 ease-in-out hover:w-auto"
@@ -27,7 +27,7 @@ export default async function Post({ params }: PostPageProps) {
           <span className="sr-only group-hover:not-sr-only">Twitterで共有</span>
         </a>
         <a
-          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://example.com/posts/${postData.id}`)}`}
+          href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(`https://ai-blog.matsukiyo.me/posts/${postData.id}`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="group inline-flex items-center justify-center w-10 h-10 px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-700 overflow-hidden transition-all duration-300 ease-in-out hover:w-auto"
