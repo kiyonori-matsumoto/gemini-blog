@@ -62,3 +62,18 @@ Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投
 **代替案:**
 *   **Netlify:** Vercelと同様に高機能で、静的サイトのホスティングに人気。
 *   **GitHub Pages:** シンプルな静的サイトを無料でホスティングするのに適している。
+
+## 6. Next.js 15 特記事項
+
+Next.js 15では、動的ルートのページコンポーネントに渡される `params` プロパティが `Promise` となりました。
+
+*   **Server Component の場合:** `async` 関数としてコンポーネントを定義し、`params` を `await` して値を取得する必要があります。
+    ```typescript
+    export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+      const { slug } = await params;
+      // ...
+    }
+    ```
+*   **`generateStaticParams` との併用:** `generateStaticParams` を使用して静的生成を行う場合でも、ページコンポーネントの `params` は `Promise` として扱われます。そのため、上記と同様に `await` が必要です。
+
+この変更は、Next.js 14以前のバージョンとは異なるため、注意が必要です。
