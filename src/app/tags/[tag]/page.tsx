@@ -3,7 +3,7 @@ import PostCard from '@/components/PostCard';
 
 export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
   const resolvedParams = await params;
-  const decodedTag = resolvedParams.tag;
+  const decodedTag = decodeURIComponent(decodeURIComponent(resolvedParams.tag));
   const allPostsData = getSortedPostsData();
 
   const filteredPosts = allPostsData.filter(post =>
