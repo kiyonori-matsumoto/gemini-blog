@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
-import { GoogleTagManager } from '@next/third-parties/google';
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -61,7 +61,7 @@ export default function RootLayout({
         <footer className="bg-gray-800 text-white p-4 text-center dark:bg-gray-950">
           <p>&copy; 2025 無限ブログ</p>
         </footer>
-        <GoogleTagManager gtmId="G-254J6XGXSP" />
+        <GoogleAnalytics gaId="G-254J6XGXSP" />
         
       </body>
     </html>
