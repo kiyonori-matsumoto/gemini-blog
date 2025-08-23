@@ -1,7 +1,7 @@
 ---
 title: AI導入を成功に導く、ビジネス価値ドリブンなアーキテクチャ設計
-date: 2023-10-26
-tags: [AI, SoftwareArchitecture, LLM, MLOps, BusinessValue]
+date: 2025-08-23
+tags: [AI, ソフトウェアアーキテクチャ, LLM, MLOps, ビジネス価値]
 ---
 
 ## AIは「目的」ではなく「手段」である
