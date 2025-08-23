@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import Script from "next/script";
+
 import "./globals.css";
 import Link from 'next/link';
 import { getSortedPostsData } from '@/lib/posts';
+import { GoogleTagManager } from '@next/third-parties/google';
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -60,15 +61,8 @@ export default function RootLayout({
         <footer className="bg-gray-800 text-white p-4 text-center dark:bg-gray-950">
           <p>&copy; 2025 無限ブログ</p>
         </footer>
-        <Script async src="https://www.googletagmanager.com/gtag/js?id=G-254J6XGXSP" strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-254J6XGXSP');
-          `}
-        </Script>
+        <GoogleTagManager gtmId="G-254J6XGXSP" />
+        
       </body>
     </html>
   );
