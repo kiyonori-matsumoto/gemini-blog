@@ -1,6 +1,6 @@
 import {
-  GoogleGenerativeAI,
-} from '@google/generative-ai';
+  GoogleGenAI,
+} from '@google/genai';
 import fs from 'fs';
 import path from 'path';
 
@@ -25,11 +25,15 @@ async function generatePost() {
   const day = String(today.getDate()).padStart(2, '0');
   const currentDate = `${year}-${month}-${day}`;
 
-  const genAI = new GoogleGenerativeAI(apiKey);
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+  const genAI = new GoogleGenAI({ apiKey });
 
   const prompt = `
-    以下のブログ記事を生成してください。
+    以下のブログ記事をJSON形式で生成してください。
+    JSONオブジェクトは以下のキーを持つ必要があります:
+    - "filename": 記事の内容を簡潔に表す英語のケバブケースのファイル名（例: "my-first-post.md"）。
+    - "title": 記事のタイトル。
+    - "tags": 記事の内容を表すハッシュタグの配列（最大5個、最低3個は汎用的なタグ）。
+    - "content": Markdown形式のブログ記事本文。H1見出しは含めないでください。
 
     **執筆者プロフィール: 山田太郎 (Taro Yamada)**
     AI時代をリードする、ビジネス価値創出ドリブンなソフトウェアアーキテクト。
@@ -46,28 +50,15 @@ async function generatePost() {
     「AIは、人間の創造性を拡張するための最高のパートナーです。私は、AIに仕事を奪われる未来ではなく、AIを使いこなすことで、これまで解決不可能だった課題に挑戦できる未来を信じています。」という哲学を持つ。
 
     **記事のトーンとスタイル:**
-    *   高橋健太の専門知識と哲学を反映した、ビジネス価値創出に焦点を当てた内容にしてください。
+    *   山田太郎の専門知識と哲学を反映した、ビジネス価値創出に焦点を当てた内容にしてください。
     *   技術的な深さと、それがビジネスにどう貢献するかを明確に結びつけてください。
     *   複雑な概念も、非技術者にも理解しやすいように、しかし専門性を損なわないように説明してください。
     *   実践的な視点や、具体的な課題解決へのアプローチを盛り込んでください。
     *   最新のAI技術トレンドや、ソフトウェアエンジニアリングのベストプラクティスに言及してください。
 
     **ルール:**
-
-    *   最初の行は、記事の内容を簡潔に表す英語のケバブケースのファイル名にしてください。(例: my-first-post.md)
-    *   ファイル名の後に、改行を一つ入れてください。
-    *   その後の内容は、Markdown形式のブログ記事本文にしてください。
-    *   ブログ記事本文の先頭には、以下の形式のYAMLフロントマターを含めてください。
-        ---
-        title: [記事のタイトル]
-        date: YYYY-MM-DD
-        tags: [tag1, tag2, tag3, tag4, tag5]
-        ---
-        dateは必ず今日のYYYY-MM-DD形式の日付にしてください。
-        tagsには、記事の内容を表すハッシュタグを最大5個、カンマ区切りで記述してください。そのうち最低3個は汎用的なタグ（例: AI, 機械学習, ソフトウェアエンジニアリング, ビジネス, テクノロジーなど）を付与してください。
-    *   YAMLフロントマターの直後には、記事の本文を記述してください。H1見出しは不要です。
-
     *   文中の強調には、アスタリスク1つで囲む形式（例: *強調したいテキスト*）を使用し、<em> タグとしてレンダリングされるようにしてください。ただし、見出しやリストのタイトルなど、構造的に太字にすべき箇所には、アスタリスク2つで囲む形式（例: **太字のテキスト**）を使用してください。
+    *   生成されるJSONは、余分な改行やコメントを含まず、厳密にJSON形式である必要があります。
 
     **記事のテーマ:**
     ${issueTitle}
@@ -76,15 +67,48 @@ async function generatePost() {
     ${issueBody}
   `;
 
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
+  const response = await genAI.models.generateContent({
+    model: 'gemini-2.5-pro',
+    contents: prompt,
+    config: {
+      responseMimeType: 'application/json',
+      responseSchema: {
+        type: 'object',
+        properties: {
+          filename: { type: 'string' },
+          title: { type: 'string' },
+          tags: { type: 'array', items: { type: 'string' }, maxItems: 5 },
+          content: { type: 'string' }
+        },
+        required: ['filename', 'title', 'tags', 'content']
+      },
+    },
+  });
+  const text = response.text; // This will now be a JSON string
 
-  const firstLine = text.split('\n')[0];
-  const fileName = firstLine.trim();
-  const content = text.substring(text.indexOf('\n') + 1).replace(/^(?:\s*\n)*/, '').trim();
+  let parsedContent;
+  try {
+    parsedContent = JSON.parse(text);
+  } catch (e) {
+    console.error('Failed to parse JSON from AI response:', e);
+    console.error('AI response text:', text);
+    throw new Error('Invalid JSON response from AI.');
+  }
 
-  const finalContent = content.replace(/date: \d{4}-\d{2}-\d{2}/, `date: ${currentDate}`);
+  const fileName = parsedContent.filename;
+  const title = parsedContent.title;
+  const date = parsedContent.date;
+  const tags = parsedContent.tags;
+  const content = parsedContent.content;
+
+  // Construct the final Markdown content with front matter
+  const finalContent = `---
+title: ${title}
+date: ${currentDate}
+tags: [${tags.join(', ')}]
+---
+
+${content}`;
 
   const fullPath = path.join(postsDirectory, fileName);
   fs.writeFileSync(fullPath, finalContent);
@@ -92,4 +116,8 @@ async function generatePost() {
   console.log("Generated post: " + fileName);
 }
 
-generatePost();
+if (process.env.NODE_ENV !== 'test') {
+  generatePost();
+}
+
+export { generatePost };
