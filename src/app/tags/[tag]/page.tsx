@@ -1,5 +1,16 @@
 import { getSortedPostsData } from '@/lib/posts';
 import PostCard from '@/components/PostCard';
+import { Metadata } from 'next';
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ tag: string }> }
+): Promise<Metadata> {
+  const resolvedParams = await params;
+  const tag = decodeURIComponent(resolvedParams.tag);
+  return {
+    title: `タグ: ${tag} | 無限ブログ`,
+  };
+}
 
 export default async function TagPage({ params }: { params: Promise<{ tag: string }> }) {
   const resolvedParams = await params;

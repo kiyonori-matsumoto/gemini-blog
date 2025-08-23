@@ -1,5 +1,16 @@
 import { getPostData } from '@/lib/posts';
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ id: string }> }
+): Promise<Metadata> {
+  const resolvedParams = await params;
+  const postData = await getPostData(resolvedParams.id);
+  return {
+    title: `${postData.title} | 無限ブログ`,
+  };
+}
 
 interface PostPageProps {
   params: Promise<{ id: string }>;
