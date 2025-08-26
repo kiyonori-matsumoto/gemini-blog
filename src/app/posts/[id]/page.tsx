@@ -7,8 +7,41 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const resolvedParams = await params;
   const postData = await getPostData(resolvedParams.id);
+
+  const title = `${postData.title} | 無限ブログ`;
+  const description = `${postData.title}に関する記事です。`; // 記事の概要を適切に設定してください
+
+  // OGP画像のURLを生成
+  const ogImageTitle = encodeURIComponent(postData.title || 'Default Title');
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
+  const ogImageUrl = `${baseUrl}/api/og?title=${ogImageTitle}`;
+
   return {
-    title: `${postData.title} | 無限ブログ`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${baseUrl}/posts/${postData.id}`,
+      siteName: '無限ブログ',
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      type: 'article',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [ogImageUrl],
+    },
   };
 }
 
