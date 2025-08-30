@@ -25,6 +25,12 @@ export default function AboutPage() {
         このブログは、生成AIの可能性と限界を探求するための実験的な試みです。
         ご理解の上、お楽しみいただければ幸いです。
       </p>
+      <p>
+        記事のリクエストや執筆依頼は、GitHub Issues からお気軽にお寄せください。
+        <a href="https://github.com/kiyonori-matsumoto/gemini-blog/issues/new" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
+          執筆依頼はこちら
+        </a>
+      </p>
     </article>
   );
 }

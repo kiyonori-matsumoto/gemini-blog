@@ -10,6 +10,9 @@ jobs:
     permissions:
       contents: write
       issues: write
+      pull-requests: write
+    env:
+      OWNER_USERNAME: 'kiyonori-matsumoto'
     steps:
       - uses: actions/checkout@v3
 
@@ -28,7 +31,8 @@ jobs:
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: node scripts/generate-post.mjs
 
-      - name: Commit and push
+      - name: Commit and Push (Owner)
+        if: github.actor == env.OWNER_USERNAME
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
@@ -36,7 +40,39 @@ jobs:
           git commit -m "feat: Add new post from issue #${{ github.event.issue.number }}"
           git push
 
-      - name: Close issue
+      - name: Create Pull Request (Non-Owner)
+        if: github.actor != env.OWNER_USERNAME
+        id: create_pr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: Add new post from issue #${{ github.event.issue.number }}"
+          title: "New Blog Post from Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}"
+          body: |
+            This pull request was automatically generated from issue #${{ github.event.issue.number }}.
+            **Issue Title:** ${{ github.event.issue.title }}
+            **Issue Body:**
+            ```
+            ${{ github.event.issue.body }}
+            ```
+            Please review the generated content and merge if approved.
+
+            Closes #${{ github.event.issue.number }}
+          branch: "feature/post-from-issue-${{ github.event.issue.number }}"
+          base: "main"
+          add-paths: 'posts/'
+
+      - name: Comment on Issue (Non-Owner)
+        if: github.actor != env.OWNER_USERNAME && steps.create_pr.outputs.pull-request-number
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            A pull request for this issue has been created for review: #${{ steps.create_pr.outputs.pull-request-number }}
+            Please review the generated content there.
+
+      - name: Close issue (Owner)
+        if: github.actor == env.OWNER_USERNAME
         uses: peter-evans/close-issue@v3
         with:
           issue-number: ${{ github.event.issue.number }}
