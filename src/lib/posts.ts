@@ -6,31 +6,29 @@ import html from 'remark-html';
 import remarkGfm from 'remark-gfm';
 import remarkCjkFriendly from 'remark-cjk-friendly';
 
-interface PostData {
+// Interface for post metadata (used in lists)
+export interface PostMetadata {
   id: string;
-  contentHtml: string;
   title: string;
   date: string;
   tags: string[];
 }
 
+// Interface for full post data (used in individual post pages)
+export interface PostData extends PostMetadata {
+  contentHtml: string; // contentHtml is required for full post data
+}
+
 const postsDirectory = path.join(process.cwd(), 'posts');
 
-export function getSortedPostsData() {
-  // Get file names under /posts
+export function getSortedPostsData(): PostMetadata[] {
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map((fileName) => {
-    // Remove ".md" from file name to get id
     const id = fileName.replace(/\.md$/, '');
-
-    // Read markdown file as string
     const fullPath = path.join(postsDirectory, fileName);
     const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-    // Use gray-matter to parse the post metadata section
     const matterResult = matter(fileContents);
 
-    // Combine the data with the id
     const tags = Array.isArray(matterResult.data.tags)
       ? (matterResult.data.tags as string[]).map(tag => String(tag).trim()).filter(tag => tag.length > 0)
       : [];
@@ -42,7 +40,6 @@ export function getSortedPostsData() {
       tags,
     };
   });
-  // Sort posts by date
   return allPostsData.sort((a, b) => {
     if (a.date < b.date) {
       return 1;
@@ -52,22 +49,29 @@ export function getSortedPostsData() {
   });
 }
 
+export function getAllPostIds() {
+  const fileNames = fs.readdirSync(postsDirectory);
+  return fileNames.map((fileName) => {
+    return {
+      params: {
+        id: fileName.replace(/\.md$/, ''),
+      },
+    };
+  });
+}
+
 export async function getPostData(id: string): Promise<PostData> {
   const fullPath = path.join(postsDirectory, `${id}.md`);
   const fileContents = fs.readFileSync(fullPath, 'utf8');
-
-  // Use gray-matter to parse the post metadata section
   const matterResult = matter(fileContents);
 
-  // Use remark to convert markdown into HTML string
   const processedContent = await remark()
-    .use(remarkCjkFriendly) // Use remark-cjk-friendly first
-    .use(remarkGfm) // Use remark-gfm
+    .use(remarkCjkFriendly)
+    .use(remarkGfm)
     .use(html)
     .process(matterResult.content);
   const contentHtml = processedContent.toString();
 
-  // Combine the data with the id and contentHtml
   const tags = Array.isArray(matterResult.data.tags)
     ? (matterResult.data.tags as string[]).map(tag => String(tag).trim()).filter(tag => tag.length > 0)
     : [];
@@ -78,4 +82,32 @@ export async function getPostData(id: string): Promise<PostData> {
     date: matterResult.data.date instanceof Date ? matterResult.data.date.toISOString().split('T')[0] : String(matterResult.data.date),
     tags,
   };
+}
+
+export function getPaginatedPostsData(page: number, postsPerPage: number): { posts: PostMetadata[]; totalPosts: number } {
+  const allPosts = getSortedPostsData();
+  const totalPosts = allPosts.length;
+  const startIndex = (page - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const posts = allPosts.slice(startIndex, endIndex);
+  return { posts, totalPosts };
+}
+
+export function getPostsByTag(tag: string, page: number, postsPerPage: number): { posts: PostMetadata[]; totalPosts: number } {
+  const allPosts = getSortedPostsData();
+  const filteredPosts = allPosts.filter(post => post.tags.includes(tag));
+  const totalPosts = filteredPosts.length;
+  const startIndex = (page - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  const posts = filteredPosts.slice(startIndex, endIndex);
+  return { posts, totalPosts };
+}
+
+export function getAllTags(): string[] {
+  const allPosts = getSortedPostsData();
+  const tags = new Set<string>();
+  allPosts.forEach(post => {
+    post.tags.forEach(tag => tags.add(tag));
+  });
+  return Array.from(tags).sort();
 }
