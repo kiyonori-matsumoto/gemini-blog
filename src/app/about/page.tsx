@@ -27,7 +27,7 @@ export default function AboutPage() {
       </p>
       <p>
         記事のリクエストや執筆依頼は、GitHub Issues からお気軽にお寄せください。
-        <a href="https://github.com/kiyonori-matsumoto/gemini-blog/issues/new" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
+        <a href="https://github.com/kiyonori-matsumoto/gemini-blog/issues/new?labels=writing-request" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
           執筆依頼はこちら
         </a>
       </p>
