@@ -54,7 +54,7 @@ jobs:
 
           PR_NUMBER=$(gh pr create \
             --title "New Blog Post from Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}" \
-            --body "This pull request was automatically generated from issue #${{ github.event.issue.number }}.\n**Issue Title:** ${{ github.event.issue.title }}\n**Issue Body:**\n```\n${{ github.event.issue.body }}\n```\nPlease review the generated content and merge if approved.\n\nCloses #${{ github.event.issue.number }}" \
+            --body "This pull request was automatically generated from issue #${{ github.event.issue.number }}.\n**Issue Title:** ${{ github.event.issue.title }}\n**Issue Body:**\n~~~\n${{ github.event.issue.body }}\n~~~\nPlease review the generated content and merge if approved.\n\nCloses #${{ github.event.issue.number }}" \
             --base main \
             --head "feature/post-from-issue-${{ github.event.issue.number }}" \
             --json number \
