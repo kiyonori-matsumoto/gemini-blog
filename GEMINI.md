@@ -1,79 +1,72 @@
-# 静的ブログ開発計画 (v2)
+# Gemini CLI Spec-Driven Development
 
-## 1. 概要
+Kiro-style Spec Driven Development implementation using gemini cli slash commands.
 
-Next.jsを使用し、GitHub Actionsと生成AIを活用した自動ブログ投稿機能を備えた「無限ブログ」を構築します。デザインはシンプルかつ洗練されたものを目指します。
+## Project Context
 
-## 2. 技術スタック
+### Paths
+- Steering: `.kiro/steering/`
+- Specs: `.kiro/specs/`
+- Commands: `.gemini/commands/`
 
-*   **フレームワーク:** Next.js (Static Site Generation - SSG)
-*   **言語:** TypeScript
-*   **スタイリング:** Tailwind CSS (ミニマリストでクリーンなデザイン、システム設定に応じたダークモード対応)
-*   **CI/CD & 自動化:** GitHub Actions, Vercel
-*   **コンテンツ生成:** 生成AI (例: Gemini API)
+### Steering vs Specification
 
-## 3. 主な機能
+**Steering** (`.kiro/steering/`) - Guide AI with project-wide rules and context  
+**Specs** (`.kiro/specs/`) - Formalize development process for individual features
 
-*   **記事管理:**
-    *   リポジリポジトリ内のMarkdownファイルで記事を管理。
-*   **静的サイト生成:**
-    *   MarkdownファイルをHTMLに変換し、静的なブログサイトを生成。
-*   **自動ブログ投稿ワークフロー:**
-    *   GitHub issueが作成されるとGitHub Actionsがトリガーされる。
-    *   Node.jsスクリプトがIssueの内容を元に生成AI (Gemini API) を呼び出し、ブログ記事(Markdown)を生成。
-    *   生成AIは、ファイル名、フロントマター（タイトルと現在の日付を含む）、および記事本文をMarkdown形式で生成する。記事本文にはH1見出しは含まれない。
-    *   スクリプトは、生成された記事の先頭に余分な改行がないことを保証し、フロントマターの日付が常に現在の日付になるように自動的に置換する。
-    *   生成された記事を`posts`ディレクトリに保存し、`main`ブランチに自動でプッシュ。
-*   **自動デプロイ:**
-    *   `main`ブランチへのプッシュをトリガーに、VercelのCI/CD機能が自動でサイトをビルド・デプロイ。
-*   **SNS共有ボタン:**
-    *   各記事ページにTwitter (X) および Facebook の共有ボタンを設置。
-    *   アイコン表示で、ホバー時にテキストが表示されるUI。
-    *   共有URLは `https://ai-blog.matsukiyo.me` を使用。
-*   **「このブログについて」ページ:**
-    *   ブログが生成AIによって自動生成されていること、および内容の正確性が保証されない旨を説明するページを新規作成。
-    *   トップページからリンク。
-*   **記事表示の調整:**
-    *   記事の行間を調整し、読みやすさを向上。
-    *   記事タイトルのサイズを調整。
-    *   Tailwind CSSの`prose`クラスの適用問題を修正。
+### Active Specifications
+- Check `.kiro/specs/` for active specifications
+- Use `/kiro:spec-status [feature-name]` to check progress
+- `spec-initialization`: Initialize a new specification structure.
 
-## 4. ディレクトリ構成
+## Development Guidelines
+- Think in English, but generate responses in Japanese (思考は英語、回答の生成は日本語で行うように)
 
-```
-/
-├── .github/
-│   └── workflows/
-│       └── issue-to-post.yml # issueからブログを生成する用
-├── posts/                  # ブログ記事 (Markdown)
-├── scripts/                # 自動化用スクリプト
-│   └── generate-post.mjs
-├── src/                    # Next.js アプリケーション
-└── GEMINI.md
-```
+## Workflow
 
-## 5. ホスティング
+### Phase 0: Steering (Optional)
+`/kiro:steering` - Create/update steering documents
+`/kiro:steering-custom` - Create custom steering for specialized contexts
 
-**推奨:** **Vercel**
-*   Next.jsとの親和性が非常に高く、GitHubリポジトリを連携させるだけでCI/CDが自動で設定される。
-*   `main`ブランチへのプッシュで自動的にデプロイされ、Pull Requestごとにプレビュー環境も提供される。
-*   **ホスティングドメイン:** `https://ai-blog.matsukiyo.me/`
+**Note**: Optional for new features or small additions. Can proceed directly to spec-init.
 
-**代替案:**
-*   **Netlify:** Vercelと同様に高機能で、静的サイトのホスティングに人気。
-*   **GitHub Pages:** シンプルな静的サイトを無料でホスティングするのに適している。
+### Phase 1: Specification Creation
+1. `/kiro:spec-init [detailed description]` - Initialize spec with detailed project description
+2. `/kiro:spec-requirements [feature]` - Generate requirements document
+3. `/kiro:spec-design [feature]` - Interactive: "requirements.mdをレビューしましたか？ [y/N]"
+4. `/kiro:spec-tasks [feature]` - Interactive: Confirms both requirements and design review
 
-## 6. Next.js 15 特記事項
+### Phase 2: Progress Tracking
+`/kiro:spec-status [feature]` - Check current progress and phases
 
-Next.js 15では、動的ルートのページコンポーネントに渡される `params` プロパティが `Promise` となりました。
+## Development Rules
+1. **Consider steering**: Run `/kiro:steering` before major development (optional for new features)
+2. **Follow 3-phase approval workflow**: Requirements → Design → Tasks → Implementation
+3. **Approval required**: Each phase requires human review (interactive prompt or manual)
+4. **No skipping phases**: Design requires approved requirements; Tasks require approved design
+5. **Update task status**: Mark tasks as completed when working on them
+6. **Keep steering current**: Run `/kiro:steering` after significant changes
+7. **Check spec compliance**: Use `/kiro:spec-status` to verify alignment
 
-*   **Server Component の場合:** `async` 関数としてコンポーネントを定義し、`params` を `await` して値を取得する必要があります。
-    ```typescript
-    export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
-      const { slug } = await params;
-      // ...
-    }
-    ```
-*   **`generateStaticParams` との併用:** `generateStaticParams` を使用して静的生成を行う場合でも、ページコンポーネントの `params` は `Promise` として扱われます。そのため、上記と同様に `await` が必要です。
+## Steering Configuration
 
-この変更は、Next.js 14以前のバージョンとは異なるため、注意が必要です。
+### Current Steering Files
+Managed by `/kiro:steering` command. Updates here reflect command changes.
+
+### Active Steering Files
+- `product.md`: Always included - Product context and business objectives
+- `tech.md`: Always included - Technology stack and architectural decisions
+- `structure.md`: Always included - File organization and code patterns
+
+### Custom Steering Files
+<!-- Added by /kiro:steering-custom command -->
+<!-- Format: 
+- `filename.md`: Mode - Pattern(s) - Description
+  Mode: Always|Conditional|Manual
+  Pattern: File patterns for Conditional mode
+-->
+
+### Inclusion Modes
+- **Always**: Loaded in every interaction (default)
+- **Conditional**: Loaded for specific file patterns (e.g., `"*.test.js"`)
+- **Manual**: Reference with `@filename.md` syntax
