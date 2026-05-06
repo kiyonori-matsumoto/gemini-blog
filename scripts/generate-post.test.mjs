@@ -35,9 +35,14 @@ jest.mock("fs", () => ({
 
 describe("generatePost", () => {
   const originalEnv = process.env;
+  const fixedDate = new Date("2025-08-23T00:00:00Z");
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Mock Date
+    jest.useFakeTimers();
+    jest.setSystemTime(fixedDate);
+
     // Reset process.env for each test
     process.env = {
       ...originalEnv,
@@ -45,6 +50,10 @@ describe("generatePost", () => {
       ISSUE_TITLE: "Test Issue Title",
       ISSUE_BODY: "Test Issue Body",
     };
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   afterAll(() => {

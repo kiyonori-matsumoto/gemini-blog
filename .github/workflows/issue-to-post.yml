@@ -33,11 +33,13 @@ jobs:
 
       - name: Commit and Push (Owner)
         if: github.actor == env.OWNER_USERNAME
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add posts/
-          git commit -m "feat: Add new post from issue #${{ github.event.issue.number }}"
+          git commit -m "feat: Add new post from issue #$ISSUE_NUMBER"
           git push
 
       - name: Create Pull Request (Non-Owner)
@@ -45,19 +47,22 @@ jobs:
         id: create_pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b "feature/post-from-issue-${{ github.event.issue.number }}"
+          git checkout -b "feature/post-from-issue-$ISSUE_NUMBER"
           git add posts/
-          git commit -m "feat: Add new post from issue #${{ github.event.issue.number }}"
-          git push origin "feature/post-from-issue-${{ github.event.issue.number }}"
+          git commit -m "feat: Add new post from issue #$ISSUE_NUMBER"
+          git push origin "feature/post-from-issue-$ISSUE_NUMBER"
 
           PR_NUMBER=$(gh pr create \
-            --title "New Blog Post from Issue #${{ github.event.issue.number }}: ${{ github.event.issue.title }}" \
-            --body "This pull request was automatically generated from issue #${{ github.event.issue.number }}.\n**Issue Title:** ${{ github.event.issue.title }}\n**Issue Body:**\n~~~\n${{ github.event.issue.body }}\n~~~\nPlease review the generated content and merge if approved.\n\nCloses #${{ github.event.issue.number }}" \
+            --title "New Blog Post from Issue #$ISSUE_NUMBER: $ISSUE_TITLE" \
+            --body "This pull request was automatically generated from issue #$ISSUE_NUMBER.\n**Issue Title:** $ISSUE_TITLE\n**Issue Body:**\n~~~\n$ISSUE_BODY\n~~~\nPlease review the generated content and merge if approved.\n\nCloses #$ISSUE_NUMBER" \
             --base main \
-            --head "feature/post-from-issue-${{ github.event.issue.number }}" \
+            --head "feature/post-from-issue-$ISSUE_NUMBER" \
             --json number \
             --jq ".number")
 
