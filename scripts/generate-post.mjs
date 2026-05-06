@@ -66,7 +66,7 @@ async function generatePost() {
   `;
 
   const response = await genAI.models.generateContent({
-    model: "gemini-3.0-flash",
+    model: "gemini-3-flash-preview",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
