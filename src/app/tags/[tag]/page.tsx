@@ -31,15 +31,15 @@ export default async function TagPage({
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">タグ: {decodedTag}</h1>
+    <>
+      <h2 className="text-3xl font-bold mb-4">タグ: {decodedTag}</h2>
       <ul className="space-y-4">
         {posts.map(({ id, date, title, tags }) => (
           <PostCard key={id} id={id} date={date} title={title} tags={tags} />
         ))}
       </ul>
       <Pagination currentPage={currentPage} totalPages={totalPages} basePath={`/tags/${encodeURIComponent(decodedTag)}`} />
-    </div>
+    </>
   );
 }
 
