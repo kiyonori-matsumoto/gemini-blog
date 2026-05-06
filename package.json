@@ -30,7 +30,7 @@
     "@babel/preset-typescript": "^7.0.0",
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-jest": "^29.0.0",
