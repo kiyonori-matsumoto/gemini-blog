@@ -1,28 +1,26 @@
-import {
-  GoogleGenAI,
-} from '@google/genai';
-import fs from 'fs';
-import path from 'path';
+import { GoogleGenAI } from "@google/genai";
+import fs from "fs";
+import path from "path";
 
-const postsDirectory = path.join(process.cwd(), 'posts');
+const postsDirectory = path.join(process.cwd(), "posts");
 
 async function generatePost() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY is not set');
+    throw new Error("GEMINI_API_KEY is not set");
   }
 
   const issueTitle = process.env.ISSUE_TITLE;
   const issueBody = process.env.ISSUE_BODY;
 
   if (!issueTitle || !issueBody) {
-    throw new Error('ISSUE_TITLE or ISSUE_BODY is not set');
+    throw new Error("ISSUE_TITLE or ISSUE_BODY is not set");
   }
 
   const today = new Date();
   const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
   const currentDate = `${year}-${month}-${day}`;
 
   const genAI = new GoogleGenAI({ apiKey });
@@ -68,19 +66,19 @@ async function generatePost() {
   `;
 
   const response = await genAI.models.generateContent({
-    model: 'gemini-2.5-pro',
+    model: "gemini-3.0-flash",
     contents: prompt,
     config: {
-      responseMimeType: 'application/json',
+      responseMimeType: "application/json",
       responseSchema: {
-        type: 'object',
+        type: "object",
         properties: {
-          filename: { type: 'string' },
-          title: { type: 'string' },
-          tags: { type: 'array', items: { type: 'string' }, maxItems: 5 },
-          content: { type: 'string' }
+          filename: { type: "string" },
+          title: { type: "string" },
+          tags: { type: "array", items: { type: "string" }, maxItems: 5 },
+          content: { type: "string" },
         },
-        required: ['filename', 'title', 'tags', 'content']
+        required: ["filename", "title", "tags", "content"],
       },
     },
   });
@@ -90,9 +88,9 @@ async function generatePost() {
   try {
     parsedContent = JSON.parse(text);
   } catch (e) {
-    console.error('Failed to parse JSON from AI response:', e);
-    console.error('AI response text:', text);
-    throw new Error('Invalid JSON response from AI.');
+    console.error("Failed to parse JSON from AI response:", e);
+    console.error("AI response text:", text);
+    throw new Error("Invalid JSON response from AI.");
   }
 
   const fileName = parsedContent.filename;
@@ -105,7 +103,7 @@ async function generatePost() {
   const finalContent = `---
 title: ${title}
 date: ${currentDate}
-tags: [${tags.join(', ')}]
+tags: [${tags.join(", ")}]
 ---
 
 ${content}`;
@@ -116,7 +114,7 @@ ${content}`;
   console.log("Generated post: " + fileName);
 }
 
-if (process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== "test") {
   generatePost();
 }
 
