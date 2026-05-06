@@ -74,6 +74,9 @@ async function generatePost() {
         },
         required: ["filename", "title", "tags", "content"],
       },
+      thinkingConfig: {
+        thinkingLevel: "high",
+      },
     },
   });
   const text = response.text; // This will now be a JSON string
