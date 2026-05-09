@@ -1,16 +1,17 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import { remark } from 'remark';
-import html from 'remark-html';
-import remarkGfm from 'remark-gfm';
-import remarkCjkFriendly from 'remark-cjk-friendly';
+import fs from "fs";
+import path from "path";
+import matter from "gray-matter";
+import { remark } from "remark";
+import html from "remark-html";
+import remarkGfm from "remark-gfm";
+import remarkCjkFriendly from "remark-cjk-friendly";
 
 // Interface for post metadata (used in lists)
 export interface PostMetadata {
   id: string;
   title: string;
   date: string;
+  updated?: string;
   tags: string[];
 }
 
@@ -19,24 +20,34 @@ export interface PostData extends PostMetadata {
   contentHtml: string; // contentHtml is required for full post data
 }
 
-const postsDirectory = path.join(process.cwd(), 'posts');
+const postsDirectory = path.join(process.cwd(), "posts");
 
 export function getSortedPostsData(): PostMetadata[] {
   const fileNames = fs.readdirSync(postsDirectory);
   const allPostsData = fileNames.map((fileName) => {
-    const id = fileName.replace(/\.md$/, '');
+    const id = fileName.replace(/\.md$/, "");
     const fullPath = path.join(postsDirectory, fileName);
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
+    const fileContents = fs.readFileSync(fullPath, "utf8");
     const matterResult = matter(fileContents);
 
     const tags = Array.isArray(matterResult.data.tags)
-      ? (matterResult.data.tags as string[]).map(tag => String(tag).trim()).filter(tag => tag.length > 0)
+      ? (matterResult.data.tags as string[])
+          .map((tag) => String(tag).trim())
+          .filter((tag) => tag.length > 0)
       : [];
-    const date = matterResult.data.date instanceof Date ? matterResult.data.date.toISOString().split('T')[0] : String(matterResult.data.date);
+    const date =
+      matterResult.data.date instanceof Date
+        ? matterResult.data.date.toISOString().split("T")[0]
+        : String(matterResult.data.date);
+    const updated =
+      matterResult.data.updated instanceof Date
+        ? matterResult.data.updated.toISOString().split("T")[0]
+        : undefined;
     return {
       id,
       title: matterResult.data.title as string,
       date,
+      updated,
       tags,
     };
   });
@@ -54,7 +65,7 @@ export function getAllPostIds() {
   return fileNames.map((fileName) => {
     return {
       params: {
-        id: fileName.replace(/\.md$/, ''),
+        id: fileName.replace(/\.md$/, ""),
       },
     };
   });
@@ -62,7 +73,7 @@ export function getAllPostIds() {
 
 export async function getPostData(id: string): Promise<PostData> {
   const fullPath = path.join(postsDirectory, `${id}.md`);
-  const fileContents = fs.readFileSync(fullPath, 'utf8');
+  const fileContents = fs.readFileSync(fullPath, "utf8");
   const matterResult = matter(fileContents);
 
   const processedContent = await remark()
@@ -73,18 +84,32 @@ export async function getPostData(id: string): Promise<PostData> {
   const contentHtml = processedContent.toString();
 
   const tags = Array.isArray(matterResult.data.tags)
-    ? (matterResult.data.tags as string[]).map(tag => String(tag).trim()).filter(tag => tag.length > 0)
+    ? (matterResult.data.tags as string[])
+        .map((tag) => String(tag).trim())
+        .filter((tag) => tag.length > 0)
     : [];
+  const date =
+    matterResult.data.date instanceof Date
+      ? matterResult.data.date.toISOString().split("T")[0]
+      : String(matterResult.data.date);
+  const updated =
+    matterResult.data.updated instanceof Date
+      ? matterResult.data.updated.toISOString().split("T")[0]
+      : undefined;
   return {
     id,
     contentHtml,
     title: matterResult.data.title as string,
-    date: matterResult.data.date instanceof Date ? matterResult.data.date.toISOString().split('T')[0] : String(matterResult.data.date),
+    date,
+    updated,
     tags,
   };
 }
 
-export function getPaginatedPostsData(page: number, postsPerPage: number): { posts: PostMetadata[]; totalPosts: number } {
+export function getPaginatedPostsData(
+  page: number,
+  postsPerPage: number,
+): { posts: PostMetadata[]; totalPosts: number } {
   const allPosts = getSortedPostsData();
   const totalPosts = allPosts.length;
   const startIndex = (page - 1) * postsPerPage;
@@ -93,9 +118,13 @@ export function getPaginatedPostsData(page: number, postsPerPage: number): { pos
   return { posts, totalPosts };
 }
 
-export function getPostsByTag(tag: string, page: number, postsPerPage: number): { posts: PostMetadata[]; totalPosts: number } {
+export function getPostsByTag(
+  tag: string,
+  page: number,
+  postsPerPage: number,
+): { posts: PostMetadata[]; totalPosts: number } {
   const allPosts = getSortedPostsData();
-  const filteredPosts = allPosts.filter(post => post.tags.includes(tag));
+  const filteredPosts = allPosts.filter((post) => post.tags.includes(tag));
   const totalPosts = filteredPosts.length;
   const startIndex = (page - 1) * postsPerPage;
   const endIndex = startIndex + postsPerPage;
@@ -106,8 +135,8 @@ export function getPostsByTag(tag: string, page: number, postsPerPage: number): 
 export function getAllTags(): string[] {
   const allPosts = getSortedPostsData();
   const tags = new Set<string>();
-  allPosts.forEach(post => {
-    post.tags.forEach(tag => tags.add(tag));
+  allPosts.forEach((post) => {
+    post.tags.forEach((tag) => tags.add(tag));
   });
   return Array.from(tags).sort();
 }
